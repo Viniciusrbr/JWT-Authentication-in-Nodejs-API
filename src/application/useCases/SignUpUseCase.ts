@@ -1,3 +1,5 @@
+import { hash } from 'bcryptjs'
+
 import { AccountAlreadyExists } from '../errors/AccountAlreadyExists'
 import { prismaClient } from '../libs/prismaClient'
 
@@ -21,11 +23,13 @@ export class SignUpUseCase {
       throw new AccountAlreadyExists()
     }
 
+    const hashedPassword = await hash(password, 8)
+
     await prismaClient.account.create({
       data: {
         name,
         email,
-        password,
+        password: hashedPassword,
       },
     })
   }
